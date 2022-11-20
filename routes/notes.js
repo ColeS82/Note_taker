@@ -1,32 +1,29 @@
 const notes = require('express').Router();
-const { readAndAppend } = require('../helpers/fsUtils');
-const uuid = require('../helpers/uuid');
+const { readFromFile, readAndAppend } = require('../helpers/fsUtils');
 
 // GET Route for retrieving all the feedback
 notes.get('/', (req, res) =>
-  readFromFile('./db/feedback.json').then((data) => res.json(JSON.parse(data)))
+  readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)))
 );
 
 // POST Route for submitting feedback
 notes.post('/', (req, res) => {
   // Destructuring assignment for the items in req.body
-  const { email, feedbackType, feedback } = req.body;
+  const { note, noteTitle } = req.body;
 
   // If all the required properties are present
-  if (email && feedbackType && feedback) {
+  if (note && noteTitle) {
     // Variable for the object we will save
-    const newFeedback = {
-      email,
-      feedbackType,
-      feedback,
-      feedback_id: uuid(),
+    const newNote = {
+      note,
+      noteTitle,
     };
 
-    readAndAppend(newFeedback, './db/feedback.json');
+    readAndAppend(newNote, './db/db.json');
 
     const response = {
       status: 'success',
-      body: newFeedback,
+      body: newNote,
     };
 
     res.json(response);
